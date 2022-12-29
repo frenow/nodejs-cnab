@@ -23,7 +23,8 @@
           },
           retorno: {
               400: ['header_arquivo', 'detalhe'],
-              240: ['header_arquivo', 'detalhe_segmento_t', 'detalhe_segmento_u']
+              240: ['detalhe_segmento_t']
+              //      240: ['header_arquivo', 'detalhe_segmento_t', 'detalhe_segmento_u']
           }
       },
       banrisul: {
@@ -82,11 +83,11 @@
                       object[key] = data.substr(start, length_1) || item.default;
                   }
                   else {
-                      console.log('Nao tem data', data);
+                      console.warn('Nao tem data', data);
                   }
               }
               else {
-                  console.log('Nao tem posicao pra key', key);
+                  console.warn('Nao tem posicao pra key', key);
               }
           });
       }
@@ -275,7 +276,6 @@
           var index_1 = 0;
           var _loop_1 = function (key) {
               var value = files[key];
-              console.log(value);
               if (value.indexOf('codigo') === 0) {
                   return "continue";
               }
@@ -302,7 +302,6 @@
           }
           var infos = yamls_1.map(function (i, index) {
               var line = makeLine(i.layout, i.data);
-              console.log(line);
               return line;
           });
           return infos;

@@ -17,7 +17,6 @@ exports.parseRemessaCnab = function (files, cnabtype, bankcode, retorno) {
         var index_1 = 0;
         var _loop_1 = function (key) {
             var value = files[key];
-            console.log(value);
             if (value.indexOf('codigo') === 0) {
                 return "continue";
             }
@@ -44,7 +43,6 @@ exports.parseRemessaCnab = function (files, cnabtype, bankcode, retorno) {
         }
         var infos = yamls_1.map(function (i, index) {
             var line = utils_1.makeLine(i.layout, i.data);
-            console.log(line);
             return line;
         });
         return infos;

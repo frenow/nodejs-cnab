@@ -16,11 +16,11 @@ function makeLine(layout, data) {
                     object[key] = data.substr(start, length_1) || item.default;
                 }
                 else {
-                    console.log('Nao tem data', data);
+                    console.warn('Nao tem data', data);
                 }
             }
             else {
-                console.log('Nao tem posicao pra key', key);
+                console.warn('Nao tem posicao pra key', key);
             }
         });
     }

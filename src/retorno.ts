@@ -19,7 +19,6 @@ export const parseRemessaCnab = (
     let index = 0
     for (const key in files) {
       const value = files[key]
-      console.log(value)
       if (value.indexOf('codigo') === 0) {
         continue
       }
@@ -45,7 +44,6 @@ export const parseRemessaCnab = (
 
     const infos = yamls.map((i: any, index: any) => {
       const line = makeLine(i.layout, i.data)
-      console.log(line)
       return line
     })
 
