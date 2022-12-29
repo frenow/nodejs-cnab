@@ -19,7 +19,7 @@
           code: '033',
           remessa: {
               400: ['header_arquivo', 'detalhe', 'trailer_arquivo'],
-              240: ['header_arquivo', 'detalhe', 'trailer_arquivo']
+              240: ['header_arquivo', 'detalhe_segmento_p', 'detalhe_segmento_q', 'detalhe_segmento_r'],
           },
           retorno: {
               400: ['header_arquivo', 'detalhe'],
@@ -276,9 +276,9 @@
           var _loop_1 = function (key) {
               var value = files[key];
               console.log(value);
-              if (value.indexOf('codigo') === 0) {
-                  return "continue";
-              }
+              // if (value.indexOf('codigo') === 0) {
+              //   continue
+              // }
               if (value.forEach) {
                   value.forEach(function (v) {
                       var layout = readYaml(CNAB_YAML_DIR + ("/cnab" + cnabtype + "/" + bankcode + "/retorno/" + value + ".yml"));
@@ -302,6 +302,7 @@
           }
           var infos = yamls_1.map(function (i, index) {
               var line = makeLine(i.layout, i.data);
+              console.log(line);
               return line;
           });
           return infos;
