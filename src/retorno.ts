@@ -19,6 +19,7 @@ export const parseRemessaCnab = (
     let index = 0
     for (const key in files) {
       const value = files[key]
+      console.log(value)
       if (value.indexOf('codigo') === 0) {
         continue
       }
