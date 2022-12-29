@@ -4,6 +4,7 @@ const yaml = require('js-yaml')
 
 export function makeLine(layout: any, data: any) {
   const object: any = {}
+  console.log(data)
   if (layout) {
     let index = 0
     Object.keys(layout).forEach(key => {

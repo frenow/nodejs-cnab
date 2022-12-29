@@ -18,6 +18,7 @@ export const parseRemessaCnab = (
     const retornoLines: any = retorno.split('\n')
     let index = 0
     for (const key in files) {
+      console.log(key)
       const value = files[key]
       if (value.indexOf('codigo') === 0) {
         continue
@@ -46,7 +47,7 @@ export const parseRemessaCnab = (
       const line = makeLine(i.layout, i.data)
       return line
     })
-
+    console.log(infos)
     return infos
   } catch (e) {
     console.error(`parseRemessaCnab: `, e)

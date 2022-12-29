@@ -5,6 +5,7 @@ var fs = require('fs');
 var yaml = require('js-yaml');
 function makeLine(layout, data) {
     var object = {};
+    console.log(data);
     if (layout) {
         var index = 0;
         Object.keys(layout).forEach(function (key) {
