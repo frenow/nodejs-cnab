@@ -23,7 +23,7 @@
           },
           retorno: {
               400: ['header_arquivo', 'detalhe'],
-              240: ['header_arquivo', 'detalhe']
+              240: ['detalhe_segmento_t']
           }
       },
       banrisul: {
