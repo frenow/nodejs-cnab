@@ -73,7 +73,6 @@
   var yaml = require('js-yaml');
   function makeLine(layout, data) {
       var object = {};
-      console.log(data);
       if (layout) {
           Object.keys(layout).forEach(function (key) {
               var item = layout[key];
@@ -276,7 +275,6 @@
           var retornoLines_1 = retorno.split('\n');
           var index_1 = 0;
           var _loop_1 = function (key) {
-              console.log(key);
               var value = files[key];
               if (value.indexOf('codigo') === 0) {
                   return "continue";
@@ -303,10 +301,10 @@
               _loop_1(key);
           }
           var infos = yamls_1.map(function (i, index) {
+              console.log(i.data, i.layout);
               var line = makeLine(i.layout, i.data);
               return line;
           });
-          console.log(infos);
           return infos;
       }
       catch (e) {
