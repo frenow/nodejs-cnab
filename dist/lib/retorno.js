@@ -18,9 +18,9 @@ exports.parseRemessaCnab = function (files, cnabtype, bankcode, retorno) {
         var _loop_1 = function (key) {
             var value = files[key];
             console.log(value);
-            // if (value.indexOf('codigo') === 0) {
-            //   continue
-            // }
+            if (value.indexOf('codigo') === 0) {
+                return "continue";
+            }
             if (value.forEach) {
                 value.forEach(function (v) {
                     var layout = utils_1.readYaml(const_1.CNAB_YAML_DIR + ("/cnab" + cnabtype + "/" + bankcode + "/retorno/" + value + ".yml"));

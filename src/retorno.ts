@@ -20,9 +20,9 @@ export const parseRemessaCnab = (
     for (const key in files) {
       const value = files[key]
       console.log(value)
-      // if (value.indexOf('codigo') === 0) {
-      //   continue
-      // }
+      if (value.indexOf('codigo') === 0) {
+        continue
+      }
       if (value.forEach) {
         value.forEach((v: any) => {
           const layout = readYaml(

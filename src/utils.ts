@@ -14,10 +14,10 @@ export function makeLine(layout: any, data: any) {
         if (data) {
           object[key] = data.substr(start, length) || item.default
         } else {
-          console.warn('Nao tem data', data)
+          console.log('Nao tem data', data)
         }
       } else {
-        console.warn('Nao tem posicao pra key', key)
+        console.log('Nao tem posicao pra key', key)
       }
     })
   }
