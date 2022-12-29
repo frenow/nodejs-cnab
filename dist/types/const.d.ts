@@ -12,9 +12,11 @@ export declare const BANK: {
     santander: {
         code: string;
         remessa: {
+            400: string[];
             240: string[];
         };
         retorno: {
+            400: string[];
             240: string[];
         };
     };

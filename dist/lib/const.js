@@ -14,9 +14,11 @@ exports.BANK = {
     santander: {
         code: '033',
         remessa: {
+            400: ['header_arquivo', 'detalhe', 'trailer_arquivo'],
             240: ['header_arquivo', 'detalhe', 'trailer_arquivo']
         },
         retorno: {
+            400: ['header_arquivo', 'detalhe'],
             240: ['header_arquivo', 'detalhe']
         }
     },
