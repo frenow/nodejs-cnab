@@ -1,4 +1,4 @@
-export const CNAB_YAML_DIR = './node_modules/@banco-br/cnab_yaml';
+export const CNAB_YAML_DIR = './node_modules/@banco-br/cnab_yaml'
 export const BANK = {
   bb: {
     code: '001',
@@ -12,10 +12,12 @@ export const BANK = {
   santander: {
     code: '033',
     remessa: {
-      400: ['header_arquivo', 'detalhe', 'trailer_arquivo']
+      400: ['header_arquivo', 'detalhe', 'trailer_arquivo'],
+      240: ['header_arquivo', 'detalhe', 'trailer_arquivo']
     },
     retorno: {
-      400: ['header_arquivo', 'detalhe']
+      400: ['header_arquivo', 'detalhe'],
+      240: ['header_arquivo', 'detalhe']
     }
   },
   banrisul: {
@@ -57,4 +59,4 @@ export const BANK = {
       400: ['header_arquivo', 'detalhe', 'trailer_arquivo']
     }
   }
-};
+}
