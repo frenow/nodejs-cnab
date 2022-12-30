@@ -41,7 +41,7 @@ exports.parseRemessaCnab = function (files, cnabtype, bankcode, retorno) {
                 _loop_1(key);
             }
         }
-        //console.log(yamls)
+        console.log(yamls_1);
         var infos = yamls_1.map(function (i, index) {
             var line = utils_1.makeLine(i.layout, i.data);
             return line;

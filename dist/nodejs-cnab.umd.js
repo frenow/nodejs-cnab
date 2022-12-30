@@ -23,7 +23,7 @@
           },
           retorno: {
               400: ['header_arquivo', 'detalhe'],
-              240: ['header_arquivo', 'detalhe_segmento_t']
+              240: ['detalhe_segmento_t']
               //240: ['header_arquivo', 'detalhe_segmento_t', 'detalhe_segmento_u']
           }
       },
@@ -300,7 +300,7 @@
                   _loop_1(key);
               }
           }
-          //console.log(yamls)
+          console.log(yamls_1);
           var infos = yamls_1.map(function (i, index) {
               var line = makeLine(i.layout, i.data);
               return line;

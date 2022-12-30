@@ -45,7 +45,7 @@ export const parseRemessaCnab = (
       }
     }
 
-    //console.log(yamls)
+    console.log(yamls)
 
     const infos = yamls.map((i: any, index: any) => {
       const line = makeLine(i.layout, i.data)
