@@ -16,9 +16,9 @@ export const parseRemessaCnab = (
   try {
     const yamls: any = []
     const retornoLines: any = retorno.split('\n')
-    console.log(retornoLines)
     let index = 0
     for (const key in files) {
+      console.log(key, files)
       const value = files[key]
       if (value.indexOf('codigo') === 0) {
         continue

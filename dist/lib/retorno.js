@@ -14,9 +14,9 @@ exports.parseRemessaCnab = function (files, cnabtype, bankcode, retorno) {
     try {
         var yamls_1 = [];
         var retornoLines_1 = retorno.split('\n');
-        console.log(retornoLines_1);
         var index_1 = 0;
         var _loop_1 = function (key) {
+            console.log(key, files);
             var value = files[key];
             if (value.indexOf('codigo') === 0) {
                 return "continue";
