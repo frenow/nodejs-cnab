@@ -13,8 +13,6 @@ export function makeLine(layout: any, data: any) {
         const length = item.pos[1] - item.pos[0] + 1
         if (data) {
           object[key] = data.substr(start, length) || item.default
-        } else {
-          console.warn('Nao tem data', data)
         }
       } else {
         console.warn('Nao tem posicao pra key', key)
