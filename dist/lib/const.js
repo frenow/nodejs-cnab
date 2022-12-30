@@ -19,7 +19,7 @@ exports.BANK = {
         },
         retorno: {
             400: ['header_arquivo', 'detalhe'],
-            240: ['detalhe_segmento_t']
+            240: ['header_arquivo', 'detalhe_segmento_t']
             //240: ['header_arquivo', 'detalhe_segmento_t', 'detalhe_segmento_u']
         }
     },

@@ -17,7 +17,7 @@ var BANK = {
         },
         retorno: {
             400: ['header_arquivo', 'detalhe'],
-            240: ['detalhe_segmento_t']
+            240: ['header_arquivo', 'detalhe_segmento_t']
             //240: ['header_arquivo', 'detalhe_segmento_t', 'detalhe_segmento_u']
         }
     },
@@ -267,35 +267,32 @@ var parseRemessaCnab = function (files, cnabtype, bankcode, retorno) {
     try {
         var yamls_1 = [];
         var retornoLines_1 = retorno.split('\n');
-        var index_1 = 0;
-        for (var i = 0; i <= retornoLines_1.length; i++) {
-            console.log(retornoLines_1[i]);
-        }
-        var _loop_1 = function (key) {
-            var value = files[key];
-            if (value.indexOf('codigo') === 0) {
-                return "continue";
-            }
-            if (value.forEach) {
-                value.forEach(function (v) {
+        for (var index = 0; index <= retornoLines_1.length; index++) {
+            var _loop_1 = function (key) {
+                var value = files[key];
+                if (value.indexOf('codigo') === 0) {
+                    return "continue";
+                }
+                if (value.forEach) {
+                    value.forEach(function (v) {
+                        var layout = readYaml(CNAB_YAML_DIR + ("/cnab" + cnabtype + "/" + bankcode + "/retorno/" + value + ".yml"));
+                        yamls_1.push({
+                            layout: layout,
+                            data: retornoLines_1[index]
+                        });
+                    });
+                }
+                else {
                     var layout = readYaml(CNAB_YAML_DIR + ("/cnab" + cnabtype + "/" + bankcode + "/retorno/" + value + ".yml"));
                     yamls_1.push({
                         layout: layout,
-                        data: retornoLines_1[index_1]
+                        data: retornoLines_1[index]
                     });
-                });
+                }
+            };
+            for (var key in files) {
+                _loop_1(key);
             }
-            else {
-                var layout = readYaml(CNAB_YAML_DIR + ("/cnab" + cnabtype + "/" + bankcode + "/retorno/" + value + ".yml"));
-                yamls_1.push({
-                    layout: layout,
-                    data: retornoLines_1[index_1]
-                });
-            }
-            index_1++;
-        };
-        for (var key in files) {
-            _loop_1(key);
         }
         //console.log(yamls)
         var infos = yamls_1.map(function (i, index) {
