@@ -14,6 +14,7 @@ exports.parseRemessaCnab = function (files, cnabtype, bankcode, retorno) {
     try {
         var yamls_1 = [];
         var retornoLines_1 = retorno.split('\n');
+        console.log(retornoLines_1);
         var index_1 = 0;
         var _loop_1 = function (key) {
             var value = files[key];
@@ -42,7 +43,6 @@ exports.parseRemessaCnab = function (files, cnabtype, bankcode, retorno) {
             _loop_1(key);
         }
         var infos = yamls_1.map(function (i, index) {
-            console.log(i.data, i.layout);
             var line = utils_1.makeLine(i.layout, i.data);
             return line;
         });
