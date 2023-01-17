@@ -147,3 +147,29 @@ export function formatCurrency(value: number = 0, integer: number = 0, decimal: 
 export function readYaml(filename: string) {
   return yaml.safeLoad(fs.readFileSync(filename, 'utf8'))
 }
+
+export function getDetailsMessage(detailsCodes: string, eventCodes: any) {
+  /*
+    função que retorna as mensagens de rejeição/informação/alerta, referentes a uma cobrança
+  */
+
+  let start = 0
+  let messages: any[] = []
+  let singleDetailCode,
+    detailMessage = ''
+
+  if (detailsCodes && Number(detailsCodes) !== 0) {
+    do {
+      singleDetailCode = detailsCodes.substring(start, 2)
+      detailMessage = eventCodes[singleDetailCode]
+
+      // casos em que não existem dados
+      if (singleDetailCode === '00' || !detailMessage) continue
+
+      messages.push(detailMessage)
+      start += 2
+    } while (singleDetailCode === '')
+  }
+
+  return messages
+}
