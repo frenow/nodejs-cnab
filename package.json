@@ -124,6 +124,7 @@
     "@banco-br/cnab_yaml": "https://github.com/frenow/cnab_yaml/tarball/master",
     "brazilian-values": "^0.7.0",
     "dayjs": "^1.8.16",
+    "highlight.js": "^11.7.0",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.15",
     "pad": "^3.2.0"

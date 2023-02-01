@@ -1,6 +1,6 @@
 export declare const CNAB_YAML_DIR = "./node_modules/@banco-br/cnab_yaml";
 export declare const BANK: {
-    bb: {
+    'bb': {
         code: string;
         remessa: {
             400: string[];
@@ -9,11 +9,11 @@ export declare const BANK: {
             400: string[];
         };
     };
-    santander: {
+    'santander': {
         code: string;
-        remessa: {
-            400: string[];
-            240: string[];
+        'remessa': {
+            '400': string[];
+            '240': string[];
         };
         retorno: {
             400: string[];

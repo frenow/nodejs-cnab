@@ -146,4 +146,25 @@ function readYaml(filename) {
     return yaml.safeLoad(fs.readFileSync(filename, 'utf8'));
 }
 exports.readYaml = readYaml;
+function getDetailsMessage(detailsCodes, eventCodes) {
+    /*
+      função que retorna as mensagens de rejeição/informação/alerta, referentes a uma cobrança
+    */
+    var start = 0;
+    var messages = [];
+    var singleDetailCode, detailMessage = '';
+    if (detailsCodes && Number(detailsCodes) !== 0) {
+        do {
+            singleDetailCode = detailsCodes.substring(start, 2);
+            detailMessage = eventCodes[singleDetailCode];
+            // casos em que não existem dados
+            if (singleDetailCode === '00' || !detailMessage)
+                continue;
+            messages.push(detailMessage);
+            start += 2;
+        } while (singleDetailCode === '');
+    }
+    return messages;
+}
+exports.getDetailsMessage = getDetailsMessage;
 //# sourceMappingURL=utils.js.map
