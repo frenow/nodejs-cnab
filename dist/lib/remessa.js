@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateRemessaCnab = void 0;
 var utils_1 = require("./utils");
 var const_1 = require("./const");
 /**

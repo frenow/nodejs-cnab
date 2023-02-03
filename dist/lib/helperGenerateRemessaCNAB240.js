@@ -1,6 +1,7 @@
 "use strict";
 // tslint:disable:variable-name
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.helperGenerateRemessaCNAB240 = void 0;
 var remessa_1 = require("./remessa");
 var _a = require('brazilian-values'), isCNPJ = _a.isCNPJ, isCPF = _a.isCPF;
 var dayjs = require('dayjs');

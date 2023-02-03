@@ -11,6 +11,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.parseEventMessage = exports.parseRemessaCnab = void 0;
 var utils_1 = require("./utils");
 var const_1 = require("./const");
 /**

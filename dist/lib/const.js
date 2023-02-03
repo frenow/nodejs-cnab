@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BANK = exports.CNAB_YAML_DIR = void 0;
 exports.CNAB_YAML_DIR = './node_modules/@banco-br/cnab_yaml';
 exports.BANK = {
     'bb': {
@@ -13,16 +14,16 @@ exports.BANK = {
     },
     'santander': {
         code: '033',
-        'remessa': {
-            '400': ['header_arquivo', 'detalhe', 'trailer_arquivo'],
-            '240': [
+        remessa: {
+            400: ['header_arquivo', 'detalhe', 'trailer_arquivo'],
+            240: [
                 'header_arquivo', 'header_lote', 'detalhe_segmento_p', 'detalhe_segmento_q',
                 'detalhe_segmento_r', 'trailer_lote', 'trailer_arquivo'
             ]
         },
         retorno: {
             400: ['header_arquivo', 'detalhe'],
-            240: ['header_arquivo', 'detalhe_segmento_t']
+            240: ['header_arquivo', 'detalhe_segmento_t', 'detalhe_segmento_u']
         }
     },
     banrisul: {
