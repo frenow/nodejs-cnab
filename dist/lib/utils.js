@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDetailsMessage = exports.readYaml = exports.formatCurrency = exports.readLine = exports.makeLine = void 0;
+exports.getSegmentData = exports.getLimitSizeDetails = exports.getDetailsMessage = exports.readYaml = exports.formatCurrency = exports.readLine = exports.makeLine = void 0;
 var pad = require('pad');
 var fs = require('fs');
 var yaml = require('js-yaml');
@@ -168,4 +168,27 @@ function getDetailsMessage(detailsCodes, eventCodes) {
     return messages;
 }
 exports.getDetailsMessage = getDetailsMessage;
+exports.getLimitSizeDetails = function (data, structure, segmentName) {
+    if (segmentName === void 0) { segmentName = ''; }
+    var segmentsSize = 0, fileSize = data.length;
+    if (segmentName !== '' && structure[segmentName]) {
+        segmentsSize = structure[segmentName].length;
+    }
+    return fileSize - segmentsSize;
+};
+exports.getSegmentData = function (params) {
+    var segmentData = [];
+    var data = params.data, _a = params.fileStructure, fileStructure = _a === void 0 ? [] : _a, dataIndex = params.indexStart, _b = params.limitSizeDetails, limitSizeDetails = _b === void 0 ? 0 : _b, _c = params.pathBaseYaml, pathBaseYaml = _c === void 0 ? '' : _c;
+    fileStructure.forEach(function (segment) {
+        if (dataIndex > limitSizeDetails || data[dataIndex] === undefined)
+            return;
+        var layout = readYaml(pathBaseYaml + "/" + segment + ".yml");
+        segmentData.push({ layout: layout, data: data[dataIndex] });
+        dataIndex++;
+    });
+    return {
+        data: segmentData,
+        currentPosition: dataIndex
+    };
+};
 //# sourceMappingURL=utils.js.map

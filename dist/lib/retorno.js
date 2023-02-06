@@ -16,49 +16,55 @@ var utils_1 = require("./utils");
 var const_1 = require("./const");
 /**
  * ARQUIVO RETORNO
- * @param {*} files
+ * @param {*} fileStructure
  * @param {*} cnabtype
  * @param {*} bankcode
  */
-exports.parseRemessaCnab = function (files, cnabtype, bankcode, retorno) {
+exports.parseRemessaCnab = function (fileStructure, cnabtype, bankcode, returnFile) {
     if (cnabtype === void 0) { cnabtype = 400; }
     if (bankcode === void 0) { bankcode = '237'; }
     try {
-        var yamls_1 = [];
-        var retornoLines_1 = retorno.split('\n');
-        for (var index = 0; index <= retornoLines_1.length; index++) {
-            var _loop_1 = function (key) {
-                var value = files[key];
-                if (value.indexOf('codigo') === 0) {
-                    return "continue";
-                }
-                if (value.forEach) {
-                    value.forEach(function (v) {
-                        var layout = utils_1.readYaml(const_1.CNAB_YAML_DIR + ("/cnab" + cnabtype + "/" + bankcode + "/retorno/" + value + ".yml"));
-                        yamls_1.push({
-                            layout: layout,
-                            data: retornoLines_1[index]
-                        });
-                    });
-                }
-                else {
-                    var layout = utils_1.readYaml(const_1.CNAB_YAML_DIR + ("/cnab" + cnabtype + "/" + bankcode + "/retorno/" + value + ".yml"));
-                    yamls_1.push({
-                        layout: layout,
-                        data: retornoLines_1[index]
-                    });
-                }
-            };
-            //let index = 0
-            for (var key in files) {
-                _loop_1(key);
+        var yamls = [], pathBaseYaml = const_1.CNAB_YAML_DIR + "/cnab" + cnabtype + "/" + bankcode + "/retorno";
+        var dataIndex = 0, nextNode = null;
+        var returnLines = returnFile.split('\n');
+        for (var key in fileStructure) {
+            /* CASO NÃO HAJA MAIS LINHAS (DADOS) */
+            if (!returnLines[dataIndex]) {
+                return;
             }
+            /*
+              VERIFICA O LIMITE DE LINHAS ATÉ O PRÓXIMO SEGMENTO
+              (HEADER, DETAILS OU TRAILERS)
+            */
+            switch (key) {
+                case 'headers':
+                    nextNode = 'details';
+                    break;
+                case 'details':
+                    nextNode = 'trailer';
+                    break;
+                default:
+                    /* TRAILERS */
+                    nextNode = '';
+                    break;
+            }
+            var segmentValues = fileStructure[key]; // segmentos (headers, details ou trailers)
+            var limitSizeDetails = utils_1.getLimitSizeDetails(returnLines, fileStructure, nextNode); // retorna a quantidade limite até o próximo segmento (headers, details ou trailers)
+            var segmentData = utils_1.getSegmentData({
+                returnLines: returnLines,
+                segmentValues: segmentValues,
+                dataIndex: dataIndex,
+                limitSizeDetails: limitSizeDetails,
+                pathBaseYaml: pathBaseYaml
+            });
+            yamls.push(__assign({}, segmentData.data)); // adiciona novo conjunto de dados
+            dataIndex = segmentData.currentPosition + 1; // próxima linha
         }
-        var infos = yamls_1.map(function (i, index) {
-            var line = utils_1.makeLine(i.layout, i.data);
+        var convertedFileData = yamls.map(function (lineData) {
+            var line = utils_1.makeLine(lineData.layout, lineData.data);
             return line;
         });
-        return infos;
+        return convertedFileData;
     }
     catch (e) {
         console.error("parseRemessaCnab: ", e);

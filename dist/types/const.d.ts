@@ -17,7 +17,11 @@ export declare const BANK: {
         };
         retorno: {
             400: string[];
-            240: string[];
+            240: {
+                headers: string[];
+                details: string[];
+                trailers: string[];
+            }[];
         };
     };
     banrisul: {

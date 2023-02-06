@@ -28,7 +28,14 @@ exports.BANK = {
         },
         retorno: {
             400: ['header_arquivo', 'detalhe'],
-            240: ['header_arquivo', 'detalhe_segmento_t', 'detalhe_segmento_u']
+            // 240: ['header_arquivo', 'header_lote', 'detalhe_segmento_t', 'detalhe_segmento_u']
+            240: [
+                {
+                    headers: ['header_arquivo', 'header_lote'],
+                    details: ['detalhe_segmento_t', 'detalhe_segmento_u'],
+                    trailers: ['trailer_lote', 'trailer_arquivo']
+                }
+            ]
         }
     },
     banrisul: {

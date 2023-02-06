@@ -1,10 +1,10 @@
 /**
  * ARQUIVO RETORNO
- * @param {*} files
+ * @param {*} fileStructure
  * @param {*} cnabtype
  * @param {*} bankcode
  */
-export declare const parseRemessaCnab: (files: any, cnabtype: number | undefined, bankcode: string | undefined, retorno: {
+export declare const parseRemessaCnab: (fileStructure: any, cnabtype: number | undefined, bankcode: string | undefined, returnFile: {
     split: (arg0: string) => void;
 }) => any;
 export declare const parseEventMessage: (linesData?: any, cnabtype?: number, bankcode?: string) => any;
