@@ -3,7 +3,7 @@ import { CNAB_YAML_DIR } from './const'
 
 /**
  * ARQUIVO RETORNO
- * @param {*} files
+ * @param {*} fileStructure
  * @param {*} cnabtype
  * @param {*} bankcode
  */
@@ -21,10 +21,15 @@ export const parseRemessaCnab = (
 
     const returnLines: any = returnFile.split('\n')
     for (const key in fileStructure) {
-      if (!returnLines[dataIndex])
-        // caso não haja mais dados
+      /* CASO NÃO HAJA MAIS LINHAS (DADOS) */
+      if (!returnLines[dataIndex]) {
         return
+      }
 
+      /* 
+        VERIFICA O LIMITE DE LINHAS ATÉ O PRÓXIMO SEGMENTO 
+        (HEADER, DETAILS OU TRAILERS) 
+      */
       switch (key) {
         case 'headers':
           nextNode = 'details'
@@ -38,8 +43,8 @@ export const parseRemessaCnab = (
           break
       }
 
-      const segmentValues = fileStructure[key]
-      let limitSizeDetails = getLimitSizeDetails(returnLines, fileStructure, nextNode)
+      const segmentValues = fileStructure[key] // segmentos (headers, details ou trailers)
+      let limitSizeDetails = getLimitSizeDetails(returnLines, fileStructure, nextNode) // retorna a quantidade limite até o próximo segmento (headers, details ou trailers)
       let segmentData = getSegmentData({
         returnLines,
         segmentValues,
@@ -47,8 +52,8 @@ export const parseRemessaCnab = (
         limitSizeDetails,
         pathBaseYaml
       })
-      yamls.push({ ...segmentData.data })
-      dataIndex = segmentData.currentPosition + 1
+      yamls.push({ ...segmentData.data }) // adiciona novo conjunto de dados
+      dataIndex = segmentData.currentPosition + 1 // próxima linha
     }
 
     const convertedFileData = yamls.map((lineData: any) => {
