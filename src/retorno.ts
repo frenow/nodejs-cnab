@@ -1,4 +1,4 @@
-import { getDetailsMessage, makeLine, readYaml } from './utils'
+import { getDetailsMessage, getLimitSizeDetails, getSegmentData, makeLine, readYaml } from './utils'
 import { CNAB_YAML_DIR } from './const'
 
 /**
@@ -8,50 +8,55 @@ import { CNAB_YAML_DIR } from './const'
  * @param {*} bankcode
  */
 export const parseRemessaCnab = (
-  files: any,
+  fileStructure: any,
   cnabtype = 400,
   bankcode = '237',
-  retorno: { split: (arg0: string) => void }
+  returnFile: { split: (arg0: string) => void }
 ) => {
   try {
-    const yamls: any = []
-    const retornoLines: any = retorno.split('\n')
-    for (var index = 0; index <= retornoLines.length; index++) {
-      //let index = 0
-      for (const key in files) {
-        const value = files[key]
-        if (value.indexOf('codigo') === 0) {
-          continue
-        }
-        if (value.forEach) {
-          value.forEach((v: any) => {
-            const layout = readYaml(
-              CNAB_YAML_DIR + `/cnab${cnabtype}/${bankcode}/retorno/${value}.yml`
-            )
-            yamls.push({
-              layout,
-              data: retornoLines[index]
-            })
-          })
-        } else {
-          const layout = readYaml(
-            CNAB_YAML_DIR + `/cnab${cnabtype}/${bankcode}/retorno/${value}.yml`
-          )
-          yamls.push({
-            layout,
-            data: retornoLines[index]
-          })
-        }
-        //index++
+    const yamls: any = [],
+      pathBaseYaml = `${CNAB_YAML_DIR}/cnab${cnabtype}/${bankcode}/retorno`
+    let dataIndex: number = 0,
+      nextNode = null
+
+    const returnLines: any = returnFile.split('\n')
+    for (const key in fileStructure) {
+      if (!returnLines[dataIndex])
+        // caso não haja mais dados
+        return
+
+      switch (key) {
+        case 'headers':
+          nextNode = 'details'
+          break
+        case 'details':
+          nextNode = 'trailer'
+          break
+        default:
+          /* TRAILERS */
+          nextNode = ''
+          break
       }
+
+      const segmentValues = fileStructure[key]
+      let limitSizeDetails = getLimitSizeDetails(returnLines, fileStructure, nextNode)
+      let segmentData = getSegmentData({
+        returnLines,
+        segmentValues,
+        dataIndex,
+        limitSizeDetails,
+        pathBaseYaml
+      })
+      yamls.push({ ...segmentData.data })
+      dataIndex = segmentData.currentPosition + 1
     }
 
-    const infos = yamls.map((i: any, index: any) => {
-      const line = makeLine(i.layout, i.data)
+    const convertedFileData = yamls.map((lineData: any) => {
+      const line = makeLine(lineData.layout, lineData.data)
       return line
     })
 
-    return infos
+    return convertedFileData
   } catch (e) {
     console.error(`parseRemessaCnab: `, e)
   }
