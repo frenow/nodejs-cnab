@@ -1,3 +1,5 @@
+import { CNAB_YAML_DIR } from './const'
+
 const pad = require('pad')
 const fs = require('fs')
 const yaml = require('js-yaml')
@@ -172,4 +174,44 @@ export function getDetailsMessage(detailsCodes: string, eventCodes: any) {
   }
 
   return messages
+}
+
+export const getLimitSizeDetails = (
+  data: any,
+  structure: any,
+  segmentName: string = ''
+): number => {
+  let segmentsSize = 0,
+    fileSize = data.length
+
+  if (segmentName !== '' && structure[segmentName]) {
+    segmentsSize = structure[segmentName].length
+  }
+
+  return fileSize - segmentsSize
+}
+
+export const getSegmentData = (params: any) => {
+  let segmentData: any[] = []
+  let {
+    data,
+    fileStructure = [],
+    indexStart: dataIndex,
+    limitSizeDetails = 0,
+    pathBaseYaml = ''
+  } = params
+
+  fileStructure.forEach((segment: any) => {
+    if (dataIndex > limitSizeDetails || data[dataIndex] === undefined) return
+
+    const layout = readYaml(`${pathBaseYaml}/${segment}.yml`)
+    segmentData.push({ layout, data: data[dataIndex] })
+
+    dataIndex++
+  })
+
+  return {
+    data: segmentData,
+    currentPosition: dataIndex
+  }
 }
