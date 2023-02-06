@@ -28,13 +28,6 @@ export const parseRemessaCnab = (
             const layout = readYaml(
               CNAB_YAML_DIR + `/cnab${cnabtype}/${bankcode}/retorno/${value}.yml`
             )
-
-            console.log('PARSEREMESSACNAB')
-            console.log(layout)
-            console.log(cnabtype)
-            console.log(bankcode)
-            console.log(value)
-
             yamls.push({
               layout,
               data: retornoLines[index]
