@@ -46,7 +46,7 @@ export const parseRemessaCnab = (
       const segmentValues = fileStructure[key] // segmentos (headers, details ou trailers)
       let limitSizeDetails = getLimitSizeDetails(returnLines, fileStructure, nextNode) // retorna a quantidade limite até o próximo segmento (headers, details ou trailers)
       let segmentData = getSegmentData({
-        returnLines,
+        data: returnLines,
         segmentValues,
         dataIndex,
         limitSizeDetails,
@@ -80,7 +80,7 @@ export const parseEventMessage = (linesData: any = [], cnabtype = 240, bankcode 
     if (!linesData || linesData.length === 0) return []
 
     const eventCodes = readYaml(
-      CNAB_YAML_DIR + `/cnab${cnabtype}/${bankcode}/retorno/ocorrencias.yml`
+      CNAB_YAML_DIR + `/ocorrencias/cnab${cnabtype}/${bankcode}.ocorrencias.yml`
     )
 
     return linesData.map((line: any) => {

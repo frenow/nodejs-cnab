@@ -177,18 +177,14 @@ export function getDetailsMessage(detailsCodes: string, eventCodes: any) {
 }
 
 export const getLimitSizeDetails = (
-  data: any,
+  currentIndex: any = 0,
   structure: any,
   segmentName: string = ''
 ): number => {
-  let segmentsSize = 0,
-    fileSize = data.length
+  let segmentsSize =
+    segmentName !== '' && structure[segmentName] ? structure[segmentName].length : 0
 
-  if (segmentName !== '' && structure[segmentName]) {
-    segmentsSize = structure[segmentName].length
-  }
-
-  return fileSize - segmentsSize
+  return currentIndex + segmentsSize
 }
 
 export const getSegmentData = (params: any) => {
