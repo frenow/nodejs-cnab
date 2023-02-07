@@ -191,23 +191,25 @@ export const getSegmentData = (params: any) => {
   let segmentData: any[] = []
   let {
     data,
-    fileStructure = [],
-    indexStart: dataIndex,
+    segmentValues = [],
+    nodeStartIndex = 0,
     limitSizeDetails = 0,
     pathBaseYaml = ''
   } = params
 
-  fileStructure.forEach((segment: any) => {
-    if (dataIndex > limitSizeDetails || data[dataIndex] === undefined) return
+  let segmentIndex = 0 // controla os segmentos (header_arquivo, header_lote e etc)
+  const dataLimit = data.slice(nodeStartIndex, limitSizeDetails) // pega somente os dados de cada partição (header, details ou trailer)
 
-    const layout = readYaml(`${pathBaseYaml}/${segment}.yml`)
-    segmentData.push({ layout, data: data[dataIndex] })
-
-    dataIndex++
+  dataLimit.forEach((segmentLine: any) => {
+    segmentIndex = segmentValues[segmentIndex] ? segmentIndex : 0 // itera sobre os segmentos
+    const segmentName = segmentValues[segmentIndex] // pega o nome de um dos segmentos (header_arquivo, header_lote e etc)
+    const layout = readYaml(`${pathBaseYaml}/${segmentName}.yml`) // busca os campos (posição, tamanho, valor padrão (default) e etc)
+    segmentData.push({ layout, data: segmentLine }) // adiciona dados convertidos (arquivo => propriedades)
+    segmentIndex++ // próximo segmento
   })
 
   return {
     data: segmentData,
-    currentPosition: dataIndex
+    nextLine: nodeStartIndex + dataLimit.length
   }
 }
