@@ -18,10 +18,18 @@ export declare const BANK: {
         retorno: {
             400: string[];
             240: {
-                headers: string[];
-                details: string[];
-                trailers: string[];
-            }[];
+                headers: {
+                    name: string[];
+                    quantity: number;
+                };
+                details: {
+                    name: string[];
+                };
+                trailers: {
+                    name: string[];
+                    quantity: number;
+                };
+            };
         };
     };
     banrisul: {

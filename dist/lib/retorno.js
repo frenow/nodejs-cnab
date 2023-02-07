@@ -24,13 +24,17 @@ exports.parseRemessaCnab = function (fileStructure, cnabtype, bankcode, returnFi
     if (cnabtype === void 0) { cnabtype = 400; }
     if (bankcode === void 0) { bankcode = '237'; }
     try {
-        var yamls = [], pathBaseYaml = const_1.CNAB_YAML_DIR + "/cnab" + cnabtype + "/" + bankcode + "/retorno";
-        var dataIndex = 0, nextNode = null;
+        var yamls = [];
+        var pathBaseYaml = const_1.CNAB_YAML_DIR + "/cnab" + cnabtype + "/" + bankcode + "/retorno";
+        var nodeStartIndex = 0; // guarda início do próximo segmento
+        var nextNode = '';
+        var limitSizeDetails = 0;
         var returnLines = returnFile.split('\n');
         for (var key in fileStructure) {
+            var segmentInfo = fileStructure[key];
             /* CASO NÃO HAJA MAIS LINHAS (DADOS) */
-            if (!returnLines[dataIndex]) {
-                return;
+            if (!returnLines[nodeStartIndex]) {
+                break;
             }
             /*
               VERIFICA O LIMITE DE LINHAS ATÉ O PRÓXIMO SEGMENTO
@@ -38,33 +42,38 @@ exports.parseRemessaCnab = function (fileStructure, cnabtype, bankcode, returnFi
             */
             switch (key) {
                 case 'headers':
-                    nextNode = 'details';
+                    limitSizeDetails = segmentInfo.quantity || 0;
                     break;
                 case 'details':
-                    nextNode = 'trailer';
+                    nextNode = 'trailers';
+                    limitSizeDetails = returnLines.length - 1 - fileStructure[nextNode].quantity;
                     break;
                 default:
                     /* TRAILERS */
-                    nextNode = '';
+                    limitSizeDetails = returnLines.length - 1;
                     break;
             }
-            var segmentValues = fileStructure[key]; // segmentos (headers, details ou trailers)
-            var limitSizeDetails = utils_1.getLimitSizeDetails(returnLines, fileStructure, nextNode); // retorna a quantidade limite até o próximo segmento (headers, details ou trailers)
-            var segmentData = utils_1.getSegmentData({
-                returnLines: returnLines,
-                segmentValues: segmentValues,
-                dataIndex: dataIndex,
-                limitSizeDetails: limitSizeDetails,
-                pathBaseYaml: pathBaseYaml
-            });
-            yamls.push(__assign({}, segmentData.data)); // adiciona novo conjunto de dados
-            dataIndex = segmentData.currentPosition + 1; // próxima linha
+            var segmentValues = fileStructure[key].name; // segmentos (headers, details ou trailers)
+            if (!segmentValues) {
+                nodeStartIndex += limitSizeDetails;
+            }
+            else {
+                var segmentData = utils_1.getSegmentData({
+                    data: returnLines,
+                    segmentValues: segmentValues,
+                    nodeStartIndex: nodeStartIndex,
+                    limitSizeDetails: limitSizeDetails,
+                    pathBaseYaml: pathBaseYaml
+                });
+                yamls.push.apply(yamls, segmentData.data); // adiciona novo conjunto de dados
+                nodeStartIndex = segmentData.nextLine; // próxima linha
+            }
         }
-        var convertedFileData = yamls.map(function (lineData) {
-            var line = utils_1.makeLine(lineData.layout, lineData.data);
+        var fileData = yamls.map(function (currentLine) {
+            var line = utils_1.makeLine(currentLine.layout, currentLine.data);
             return line;
         });
-        return convertedFileData;
+        return fileData;
     }
     catch (e) {
         console.error("parseRemessaCnab: ", e);
@@ -84,7 +93,7 @@ exports.parseEventMessage = function (linesData, cnabtype, bankcode) {
         var type40c_1 = ['06', '09', '17', '93', '94'];
         if (!linesData || linesData.length === 0)
             return [];
-        var eventCodes_1 = utils_1.readYaml(const_1.CNAB_YAML_DIR + ("/cnab" + cnabtype + "/" + bankcode + "/retorno/ocorrencias.yml"));
+        var eventCodes_1 = utils_1.readYaml(const_1.CNAB_YAML_DIR + ("/ocorrencias/cnab" + cnabtype + "/" + bankcode + ".ocorrencias.yml"));
         return linesData.map(function (line) {
             var message = {};
             var messageDetails = [];

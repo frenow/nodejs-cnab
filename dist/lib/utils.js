@@ -168,27 +168,27 @@ function getDetailsMessage(detailsCodes, eventCodes) {
     return messages;
 }
 exports.getDetailsMessage = getDetailsMessage;
-exports.getLimitSizeDetails = function (data, structure, segmentName) {
+exports.getLimitSizeDetails = function (currentIndex, structure, segmentName) {
+    if (currentIndex === void 0) { currentIndex = 0; }
     if (segmentName === void 0) { segmentName = ''; }
-    var segmentsSize = 0, fileSize = data.length;
-    if (segmentName !== '' && structure[segmentName]) {
-        segmentsSize = structure[segmentName].length;
-    }
-    return fileSize - segmentsSize;
+    var segmentsSize = segmentName !== '' && structure[segmentName] ? structure[segmentName].length : 0;
+    return currentIndex + segmentsSize;
 };
 exports.getSegmentData = function (params) {
     var segmentData = [];
-    var data = params.data, _a = params.fileStructure, fileStructure = _a === void 0 ? [] : _a, dataIndex = params.indexStart, _b = params.limitSizeDetails, limitSizeDetails = _b === void 0 ? 0 : _b, _c = params.pathBaseYaml, pathBaseYaml = _c === void 0 ? '' : _c;
-    fileStructure.forEach(function (segment) {
-        if (dataIndex > limitSizeDetails || data[dataIndex] === undefined)
-            return;
-        var layout = readYaml(pathBaseYaml + "/" + segment + ".yml");
-        segmentData.push({ layout: layout, data: data[dataIndex] });
-        dataIndex++;
+    var data = params.data, _a = params.segmentValues, segmentValues = _a === void 0 ? [] : _a, _b = params.nodeStartIndex, nodeStartIndex = _b === void 0 ? 0 : _b, _c = params.limitSizeDetails, limitSizeDetails = _c === void 0 ? 0 : _c, _d = params.pathBaseYaml, pathBaseYaml = _d === void 0 ? '' : _d;
+    var segmentIndex = 0; // controla os segmentos (header_arquivo, header_lote e etc)
+    var dataLimit = data.slice(nodeStartIndex, limitSizeDetails); // pega somente os dados de cada partição (header, details ou trailer)
+    dataLimit.forEach(function (segmentLine) {
+        segmentIndex = segmentValues[segmentIndex] ? segmentIndex : 0; // itera sobre os segmentos
+        var segmentName = segmentValues[segmentIndex]; // pega o nome de um dos segmentos (header_arquivo, header_lote e etc)
+        var layout = readYaml(pathBaseYaml + "/" + segmentName + ".yml"); // busca os campos (posição, tamanho, valor padrão (default) e etc)
+        segmentData.push({ layout: layout, data: segmentLine }); // adiciona dados convertidos (arquivo => propriedades)
+        segmentIndex++; // próximo segmento
     });
     return {
         data: segmentData,
-        currentPosition: dataIndex
+        nextLine: nodeStartIndex + dataLimit.length
     };
 };
 //# sourceMappingURL=utils.js.map

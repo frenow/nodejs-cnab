@@ -6,8 +6,8 @@ export declare function readLine(layout: any, data: any): {
 export declare function formatCurrency(value?: number, integer?: number, decimal?: number): string;
 export declare function readYaml(filename: string): any;
 export declare function getDetailsMessage(detailsCodes: string, eventCodes: any): any[];
-export declare const getLimitSizeDetails: (data: any, structure: any, segmentName?: string) => number;
+export declare const getLimitSizeDetails: (currentIndex: any, structure: any, segmentName?: string) => number;
 export declare const getSegmentData: (params: any) => {
     data: any[];
-    currentPosition: any;
+    nextLine: any;
 };

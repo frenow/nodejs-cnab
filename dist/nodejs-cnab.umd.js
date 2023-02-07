@@ -31,14 +31,11 @@
           },
           retorno: {
               400: ['header_arquivo', 'detalhe'],
-              // 240: ['header_arquivo', 'header_lote', 'detalhe_segmento_t', 'detalhe_segmento_u']
-              240: [
-                  {
-                      headers: ['header_arquivo', 'header_lote'],
-                      details: ['detalhe_segmento_t', 'detalhe_segmento_u'],
-                      trailers: ['trailer_lote', 'trailer_arquivo']
-                  }
-              ]
+              240: {
+                  headers: { name: ['header_arquivo', 'header_lote'], quantity: 2 },
+                  details: { name: ['detalhe_segmento_t', 'detalhe_segmento_u'] },
+                  trailers: { name: ['trailer_lote', 'trailer_arquivo'], quantity: 2 }
+              }
           }
       },
       banrisul: {
@@ -243,27 +240,21 @@
       }
       return messages;
   }
-  var getLimitSizeDetails = function (data, structure, segmentName) {
-      if (segmentName === void 0) { segmentName = ''; }
-      var segmentsSize = 0, fileSize = data.length;
-      if (segmentName !== '' && structure[segmentName]) {
-          segmentsSize = structure[segmentName].length;
-      }
-      return fileSize - segmentsSize;
-  };
   var getSegmentData = function (params) {
       var segmentData = [];
-      var data = params.data, _a = params.fileStructure, fileStructure = _a === void 0 ? [] : _a, dataIndex = params.indexStart, _b = params.limitSizeDetails, limitSizeDetails = _b === void 0 ? 0 : _b, _c = params.pathBaseYaml, pathBaseYaml = _c === void 0 ? '' : _c;
-      fileStructure.forEach(function (segment) {
-          if (dataIndex > limitSizeDetails || data[dataIndex] === undefined)
-              return;
-          var layout = readYaml(pathBaseYaml + "/" + segment + ".yml");
-          segmentData.push({ layout: layout, data: data[dataIndex] });
-          dataIndex++;
+      var data = params.data, _a = params.segmentValues, segmentValues = _a === void 0 ? [] : _a, _b = params.nodeStartIndex, nodeStartIndex = _b === void 0 ? 0 : _b, _c = params.limitSizeDetails, limitSizeDetails = _c === void 0 ? 0 : _c, _d = params.pathBaseYaml, pathBaseYaml = _d === void 0 ? '' : _d;
+      var segmentIndex = 0; // controla os segmentos (header_arquivo, header_lote e etc)
+      var dataLimit = data.slice(nodeStartIndex, limitSizeDetails); // pega somente os dados de cada partição (header, details ou trailer)
+      dataLimit.forEach(function (segmentLine) {
+          segmentIndex = segmentValues[segmentIndex] ? segmentIndex : 0; // itera sobre os segmentos
+          var segmentName = segmentValues[segmentIndex]; // pega o nome de um dos segmentos (header_arquivo, header_lote e etc)
+          var layout = readYaml(pathBaseYaml + "/" + segmentName + ".yml"); // busca os campos (posição, tamanho, valor padrão (default) e etc)
+          segmentData.push({ layout: layout, data: segmentLine }); // adiciona dados convertidos (arquivo => propriedades)
+          segmentIndex++; // próximo segmento
       });
       return {
           data: segmentData,
-          currentPosition: dataIndex
+          nextLine: nodeStartIndex + dataLimit.length
       };
   };
 
@@ -351,13 +342,17 @@
       if (cnabtype === void 0) { cnabtype = 400; }
       if (bankcode === void 0) { bankcode = '237'; }
       try {
-          var yamls = [], pathBaseYaml = CNAB_YAML_DIR + "/cnab" + cnabtype + "/" + bankcode + "/retorno";
-          var dataIndex = 0, nextNode = null;
+          var yamls = [];
+          var pathBaseYaml = CNAB_YAML_DIR + "/cnab" + cnabtype + "/" + bankcode + "/retorno";
+          var nodeStartIndex = 0; // guarda início do próximo segmento
+          var nextNode = '';
+          var limitSizeDetails = 0;
           var returnLines = returnFile.split('\n');
           for (var key in fileStructure) {
+              var segmentInfo = fileStructure[key];
               /* CASO NÃO HAJA MAIS LINHAS (DADOS) */
-              if (!returnLines[dataIndex]) {
-                  return;
+              if (!returnLines[nodeStartIndex]) {
+                  break;
               }
               /*
                 VERIFICA O LIMITE DE LINHAS ATÉ O PRÓXIMO SEGMENTO
@@ -365,33 +360,38 @@
               */
               switch (key) {
                   case 'headers':
-                      nextNode = 'details';
+                      limitSizeDetails = segmentInfo.quantity || 0;
                       break;
                   case 'details':
-                      nextNode = 'trailer';
+                      nextNode = 'trailers';
+                      limitSizeDetails = returnLines.length - 1 - fileStructure[nextNode].quantity;
                       break;
                   default:
                       /* TRAILERS */
-                      nextNode = '';
+                      limitSizeDetails = returnLines.length - 1;
                       break;
               }
-              var segmentValues = fileStructure[key]; // segmentos (headers, details ou trailers)
-              var limitSizeDetails = getLimitSizeDetails(returnLines, fileStructure, nextNode); // retorna a quantidade limite até o próximo segmento (headers, details ou trailers)
-              var segmentData = getSegmentData({
-                  returnLines: returnLines,
-                  segmentValues: segmentValues,
-                  dataIndex: dataIndex,
-                  limitSizeDetails: limitSizeDetails,
-                  pathBaseYaml: pathBaseYaml
-              });
-              yamls.push(__assign({}, segmentData.data)); // adiciona novo conjunto de dados
-              dataIndex = segmentData.currentPosition + 1; // próxima linha
+              var segmentValues = fileStructure[key].name; // segmentos (headers, details ou trailers)
+              if (!segmentValues) {
+                  nodeStartIndex += limitSizeDetails;
+              }
+              else {
+                  var segmentData = getSegmentData({
+                      data: returnLines,
+                      segmentValues: segmentValues,
+                      nodeStartIndex: nodeStartIndex,
+                      limitSizeDetails: limitSizeDetails,
+                      pathBaseYaml: pathBaseYaml
+                  });
+                  yamls.push.apply(yamls, segmentData.data); // adiciona novo conjunto de dados
+                  nodeStartIndex = segmentData.nextLine; // próxima linha
+              }
           }
-          var convertedFileData = yamls.map(function (lineData) {
-              var line = makeLine(lineData.layout, lineData.data);
+          var fileData = yamls.map(function (currentLine) {
+              var line = makeLine(currentLine.layout, currentLine.data);
               return line;
           });
-          return convertedFileData;
+          return fileData;
       }
       catch (e) {
           console.error("parseRemessaCnab: ", e);
@@ -411,7 +411,7 @@
           var type40c_1 = ['06', '09', '17', '93', '94'];
           if (!linesData || linesData.length === 0)
               return [];
-          var eventCodes_1 = readYaml(CNAB_YAML_DIR + ("/cnab" + cnabtype + "/" + bankcode + "/retorno/ocorrencias.yml"));
+          var eventCodes_1 = readYaml(CNAB_YAML_DIR + ("/ocorrencias/cnab" + cnabtype + "/" + bankcode + ".ocorrencias.yml"));
           return linesData.map(function (line) {
               var message = {};
               var messageDetails = [];
